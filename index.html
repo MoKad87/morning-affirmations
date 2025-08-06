@@ -1,16 +1,14 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <title>Morning Affirmations</title>
-  <style>
-    body { font-family: sans-serif; padding: 2em; max-width: 400px; margin: auto; text-align: center; }
-    button { margin: 0.5em; padding: 1em; width: 100%; font-size: 1.1em; }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <h1>Good Morning</h1>
   <div id="buttons"></div>
+
   <script>
     const groups = {
       "Discipline & Mindset": [
@@ -50,6 +48,7 @@
         btn.onclick = () => speakList(groups[label]);
         container.appendChild(btn);
       });
+
       const rnd = document.createElement("button");
       rnd.textContent = "Surprise Me!";
       rnd.onclick = () => {
