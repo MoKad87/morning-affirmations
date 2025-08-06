@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Morning Affirmations</title>
+  <style>
+    body { font-family: sans-serif; padding: 2em; max-width: 400px; margin: auto; text-align: center; }
+    button { margin: 0.5em; padding: 1em; width: 100%; font-size: 1.1em; }
+  </style>
+</head>
+<body>
+  <h1>Good Morning</h1>
+  <div id="buttons"></div>
+  <script>
+    const groups = {
+      "Discipline & Mindset": [
+        "I show up, even when it's hard. Discipline is my baseline.",
+        "My mornings set the tone for everything—I own them.",
+        "I don’t waste energy on what I can’t control—I channel it into what I can build."
+      ],
+      "Career & Mastery": [
+        "I am becoming a master of high‑level design, automation, and deep protocol knowledge.",
+        "I lead through competence, not titles. My work speaks before I do.",
+        "I'm not just doing the job—I’m shaping the network."
+      ],
+      "Wealth & Strength": [
+        "I move with long‑term vision. My money works for me.",
+        "Every workout I finish is a vote for the man I’m becoming.",
+        "I don’t need comfort—I need growth."
+      ],
+      "Love, Legacy & Spirit": [
+        "I choose love with clarity, not fear. I don’t run from depth.",
+        "Vulnerability is not weakness. It’s power with truth.",
+        "I come from history and strength. I carry that with pride."
+      ]
+    };
+
+    function speakList(arr) {
+      arr.forEach(line => {
+        const msg = new SpeechSynthesisUtterance(line);
+        window.speechSynthesis.speak(msg);
+      });
+    }
+
+    function addButtons() {
+      const container = document.getElementById("buttons");
+      Object.keys(groups).forEach(label => {
+        const btn = document.createElement("button");
+        btn.textContent = label;
+        btn.onclick = () => speakList(groups[label]);
+        container.appendChild(btn);
+      });
+      const rnd = document.createElement("button");
+      rnd.textContent = "Surprise Me!";
+      rnd.onclick = () => {
+        const keys = Object.keys(groups);
+        const pick = keys[Math.floor(Math.random() * keys.length)];
+        speakList(groups[pick]);
+      };
+      container.appendChild(rnd);
+    }
+
+    window.onload = addButtons;
+  </script>
+</body>
+</html>
