@@ -4,8 +4,10 @@
   <meta charset="UTF-8">
   <title>Morning Affirmations</title>
   <link rel="stylesheet" href="styles.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
 </head>
 <body>
+  <button id="theme-toggle">Dark Mode</button>
   <h1>Good Morning</h1>
   <div id="buttons"></div>
 
@@ -17,12 +19,12 @@
         "I don’t waste energy on what I can’t control—I channel it into what I can build."
       ],
       "Career & Mastery": [
-        "I am becoming a master of high‑level design, automation, and deep protocol knowledge.",
+        "I am becoming a master of high-level design, automation, and deep protocol knowledge.",
         "I lead through competence, not titles. My work speaks before I do.",
         "I'm not just doing the job—I’m shaping the network."
       ],
       "Wealth & Strength": [
-        "I move with long‑term vision. My money works for me.",
+        "I move with long-term vision. My money works for me.",
         "Every workout I finish is a vote for the man I’m becoming.",
         "I don’t need comfort—I need growth."
       ],
@@ -33,33 +35,68 @@
       ]
     };
 
-    function speakList(arr) {
-      arr.forEach(line => {
-        const msg = new SpeechSynthesisUtterance(line);
-        window.speechSynthesis.speak(msg);
-      });
+    function getVoice() {
+      const voices = speechSynthesis.getVoices();
+      const preferred = [
+        "Google US English",
+        "Samantha",
+        "Alex",
+        "Microsoft Aria Online (Natural)",
+        "Microsoft Jenny Online (Natural)"
+      ];
+      return voices.find(v => preferred.includes(v.name)) || voices[0];
     }
 
-    function addButtons() {
+    function speakList(arr) {
+      const voice = getVoice();
+
+      function speakLine(i) {
+        if (i >= arr.length) return;
+        const msg = new SpeechSynthesisUtterance(arr[i]);
+        msg.voice = voice;
+        msg.rate = 0.95;
+        msg.pitch = 1.1;
+        msg.volume = 1;
+        msg.onend = () => setTimeout(() => speakLine(i + 1), 300);
+        speechSynthesis.speak(msg);
+      }
+
+      speakLine(0);
+    }
+
+    function buildUI() {
       const container = document.getElementById("buttons");
-      Object.keys(groups).forEach(label => {
+      container.innerHTML = "";
+
+      Object.entries(groups).forEach(([label, lines]) => {
         const btn = document.createElement("button");
         btn.textContent = label;
-        btn.onclick = () => speakList(groups[label]);
+        btn.onclick = () => speakList(lines);
         container.appendChild(btn);
       });
 
-      const rnd = document.createElement("button");
-      rnd.textContent = "Surprise Me!";
-      rnd.onclick = () => {
+      const randomBtn = document.createElement("button");
+      randomBtn.textContent = "Surprise Me!";
+      randomBtn.onclick = () => {
         const keys = Object.keys(groups);
         const pick = keys[Math.floor(Math.random() * keys.length)];
         speakList(groups[pick]);
       };
-      container.appendChild(rnd);
+      container.appendChild(randomBtn);
     }
 
-    window.onload = addButtons;
+    if (speechSynthesis.getVoices().length > 0) {
+      buildUI();
+    } else {
+      speechSynthesis.onvoiceschanged = buildUI;
+    }
+
+    // Theme toggle
+    document.getElementById("theme-toggle").onclick = () => {
+      document.body.classList.toggle("dark");
+      const mode = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
+      document.getElementById("theme-toggle").textContent = mode;
+    };
   </script>
 </body>
 </html>
