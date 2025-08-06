@@ -73,25 +73,27 @@
       ]
     };
 
-    function getVoice() {
-      const voices = speechSynthesis.getVoices();
-      const preferred = ["Samantha", "Google US English", "Alex"];
-      return voices.find(v => preferred.includes(v.name)) || voices[0];
-    }
+    // ✅ Secure API-based ElevenLabs voice
+    async function speakList(lines) {
+      for (const line of lines) {
+        try {
+          const response = await fetch('/api/speak', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ text: line })
+          });
 
-    function speakList(arr) {
-      const voice = getVoice();
-      function speakLine(i) {
-        if (i >= arr.length) return;
-        const msg = new SpeechSynthesisUtterance(arr[i]);
-        msg.voice = voice;
-        msg.rate = 0.95;
-        msg.pitch = 1.1;
-        msg.volume = 1;
-        msg.onend = () => setTimeout(() => speakLine(i + 1), 300);
-        speechSynthesis.speak(msg);
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          await new Promise(resolve => {
+            audio.onended = resolve;
+            audio.play();
+          });
+        } catch (err) {
+          console.error('Voice error:', err);
+        }
       }
-      speakLine(0);
     }
 
     function buildButtons() {
@@ -113,18 +115,15 @@
       container.appendChild(randomBtn);
     }
 
-    if (speechSynthesis.getVoices().length > 0) {
-      buildButtons();
-    } else {
-      speechSynthesis.onvoiceschanged = buildButtons;
-    }
-
     document.getElementById("theme-toggle").onclick = () => {
       const body = document.body;
       body.classList.toggle("dark");
       document.getElementById("theme-toggle").textContent =
         body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
     };
+
+    // Run after page load
+    window.onload = buildButtons;
   </script>
 </body>
 </html>
