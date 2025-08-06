@@ -1,31 +1,25 @@
-export default async function handler(req, res) {
-  if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Only POST allowed' });
-  }
+async function speakList(lines) {
+  for (const line of lines) {
+    try {
+      const response = await fetch('/api/speak', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text: line })
+      });
 
-  const { text } = req.body;
-  const voiceId = '21m00Tcm4TlvDq8ikWAM'; // Replace with your preferred voice ID
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const audio = new Audio(url);
 
-  try {
-    const elevenRes = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'xi-api-key': process.env.ELEVEN_API_KEY
-      },
-      body: JSON.stringify({
-        text,
-        voice_settings: {
-          stability: 0.5,
-          similarity_boost: 0.8
-        }
-      })
-    });
+      // 👇 This ensures audio plays one-by-one
+      await new Promise((resolve) => {
+        audio.onended = resolve;
+        audio.onerror = resolve;  // Fallback if there's a problem
+        audio.play();
+      });
 
-    const audio = await elevenRes.arrayBuffer();
-    res.setHeader('Content-Type', 'audio/mpeg');
-    res.send(Buffer.from(audio));
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to speak', details: err.message });
+    } catch (err) {
+      console.error('Voice error:', err);
+    }
   }
 }
