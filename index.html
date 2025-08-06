@@ -73,7 +73,7 @@
       ]
     };
 
-    // ✅ Secure API-based ElevenLabs voice
+    // ✅ Corrected: play each line one by one (waits for audio to finish)
     async function speakList(lines) {
       for (const line of lines) {
         try {
@@ -86,10 +86,13 @@
           const blob = await response.blob();
           const url = URL.createObjectURL(blob);
           const audio = new Audio(url);
-          await new Promise(resolve => {
+
+          await new Promise((resolve) => {
             audio.onended = resolve;
+            audio.onerror = resolve; // fallback on error
             audio.play();
           });
+
         } catch (err) {
           console.error('Voice error:', err);
         }
@@ -122,7 +125,6 @@
         body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
     };
 
-    // Run after page load
     window.onload = buildButtons;
   </script>
 </body>
