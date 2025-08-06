@@ -3,13 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <title>Morning Affirmations</title>
-  <link rel="stylesheet" href="styles.css">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="styles.css">
 </head>
-<body>
-  <button id="theme-toggle">Dark Mode</button>
-  <h1>Good Morning</h1>
-  <div id="buttons"></div>
+<body class="dark">
+  <main>
+    <header>
+      <h1>Good Morning</h1>
+      <p>Start your day grounded, focused, and clear.</p>
+      <button id="theme-toggle">Light Mode</button>
+    </header>
+    <section id="buttons"></section>
+  </main>
 
   <script>
     const groups = {
@@ -32,24 +37,50 @@
         "I choose love with clarity, not fear. I don’t run from depth.",
         "Vulnerability is not weakness. It’s power with truth.",
         "I come from history and strength. I carry that with pride."
+      ],
+      "Self-Love & Wholeness": [
+        "Nothing outside of me defines my worth. I choose to be enough as I am.",
+        "I don’t chase love — I become it, I embody it, I protect it in myself first.",
+        "I don’t self-abandon to be accepted. I’d rather be alone with truth than surrounded by noise.",
+        "I don’t need to be fixed — I just need to be seen, understood, and respected.",
+        "My body, my scars, my history — all of it makes me real. I carry it with pride."
+      ],
+      "Self-Esteem & Respect": [
+        "I move with integrity even when no one’s watching — that’s where real confidence comes from.",
+        "I don’t lower my standards to be liked. I raise my self-respect to be clear.",
+        "My self-esteem doesn’t come from applause — it comes from the life I build in silence.",
+        "I can stand alone without folding. I don’t need validation to be solid.",
+        "Respect starts with how I treat myself when no one else is around."
+      ],
+      "Positivity & Mindset": [
+        "I choose clarity over chaos. I keep my mind clean like I keep my house clean.",
+        "My optimism isn’t naive — it’s earned through surviving and still showing up.",
+        "I don’t feed fear. I focus on what I *can* shape, build, or move.",
+        "I expect challenges — and I meet them with presence, not panic.",
+        "Every day is a new chance to move better, think sharper, and show up real."
+      ],
+      "Stoic Focus (Marcus Aurelius)": [
+        "Today I control only two things: my actions and my thoughts — the rest is noise.",
+        "I don’t argue with reality — I align with it and move with reason.",
+        "I face discomfort without flinching. What stands in the way becomes the path.",
+        "My mind is my fortress. No one can disturb its peace unless I allow it.",
+        "I waste no energy wishing for ease. I strengthen myself for truth.",
+        "I live by the principle, not the praise. I don’t need applause to be right.",
+        "Let others chase pleasure or status — I chase inner clarity and self-discipline.",
+        "Nothing that happens to me is new — but how I respond makes all the difference.",
+        "I do not avoid struggle. I prepare for it. I sharpen myself against it.",
+        "I am not disturbed by events — only my judgments about them."
       ]
     };
 
     function getVoice() {
       const voices = speechSynthesis.getVoices();
-      const preferred = [
-        "Google US English",
-        "Samantha",
-        "Alex",
-        "Microsoft Aria Online (Natural)",
-        "Microsoft Jenny Online (Natural)"
-      ];
+      const preferred = ["Samantha", "Google US English", "Alex"];
       return voices.find(v => preferred.includes(v.name)) || voices[0];
     }
 
     function speakList(arr) {
       const voice = getVoice();
-
       function speakLine(i) {
         if (i >= arr.length) return;
         const msg = new SpeechSynthesisUtterance(arr[i]);
@@ -60,23 +91,20 @@
         msg.onend = () => setTimeout(() => speakLine(i + 1), 300);
         speechSynthesis.speak(msg);
       }
-
       speakLine(0);
     }
 
-    function buildUI() {
+    function buildButtons() {
       const container = document.getElementById("buttons");
-      container.innerHTML = "";
-
       Object.entries(groups).forEach(([label, lines]) => {
         const btn = document.createElement("button");
-        btn.textContent = label;
+        btn.textContent = `🔊 ${label}`;
         btn.onclick = () => speakList(lines);
         container.appendChild(btn);
       });
 
       const randomBtn = document.createElement("button");
-      randomBtn.textContent = "Surprise Me!";
+      randomBtn.textContent = "🎲 Surprise Me";
       randomBtn.onclick = () => {
         const keys = Object.keys(groups);
         const pick = keys[Math.floor(Math.random() * keys.length)];
@@ -86,16 +114,16 @@
     }
 
     if (speechSynthesis.getVoices().length > 0) {
-      buildUI();
+      buildButtons();
     } else {
-      speechSynthesis.onvoiceschanged = buildUI;
+      speechSynthesis.onvoiceschanged = buildButtons;
     }
 
-    // Theme toggle
     document.getElementById("theme-toggle").onclick = () => {
-      document.body.classList.toggle("dark");
-      const mode = document.body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
-      document.getElementById("theme-toggle").textContent = mode;
+      const body = document.body;
+      body.classList.toggle("dark");
+      document.getElementById("theme-toggle").textContent =
+        body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
     };
   </script>
 </body>
