@@ -6,7 +6,7 @@
 
   <title>GBB Commands</title>
 
-  <!-- PWA -->
+  <!-- PWA Meta -->
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#1f2937">
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -79,10 +79,6 @@
       gap: 12px;
     }
 
-    .arrow {
-      font-size: 28px;
-    }
-
     .footer {
       margin-top: 10px;
       font-size: 12px;
@@ -100,10 +96,9 @@
       <button class="btn" onclick="sendCmd('CLOSE')">CLOSE</button>
       <button class="btn" onclick="sendCmd('WALK')">WALK</button>
 
-      <!-- split front 2 -->
       <div class="row2">
-        <button class="btn secondary arrow" onclick="sendCmd('LEFT')">←</button>
-        <button class="btn secondary arrow" onclick="sendCmd('RIGHT')">→</button>
+        <button class="btn secondary" onclick="sendCmd('FRONT')">FRONT</button>
+        <button class="btn secondary" onclick="sendCmd('FRONT2')">FRONT 2</button>
       </div>
 
       <button class="btn secondary" onclick="sendCmd('?')">?</button>
@@ -115,26 +110,21 @@
   </main>
 
   <script>
-  // Register service worker (safe to keep)
-  if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js');
-  }
-
-  function sendCmd(cmd) {
-    const number = '2532011314';
-    const body = encodeURIComponent(cmd);
-
-    // Detect iOS devices
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-
-    if (isIOS) {
-      // iOS requires &body instead of ?body
-      window.location.href = `sms:${number}&body=${body}`;
-    } else {
-      // Android / others
-      window.location.href = `sms:${number}?body=${body}`;
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('service-worker.js');
     }
-  }
+
+    function sendCmd(cmd) {
+      const number = '2532011314';
+      const body = encodeURIComponent(cmd);
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+
+      if (isIOS) {
+        window.location.href = `sms:${number}&body=${body}`;
+      } else {
+        window.location.href = `sms:${number}?body=${body}`;
+      }
+    }
   </script>
 </body>
 </html>
