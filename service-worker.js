@@ -1,18 +1,23 @@
-const CACHE = "gbb-commands-v1";
+function sendCmd(cmd) {
+  const number = '2532011314';
+  const body = encodeURIComponent(cmd);
 
-self.addEventListener("install", event => {
-  event.waitUntil(
-    caches.open(CACHE).then(cache =>
-      cache.addAll([
-        "./index.html",
-        "./manifest.json"
-      ])
-    )
-  );
-});
+  const ua = navigator.userAgent || "";
+  const isIOS = /iPad|iPhone|iPod/.test(ua);
+  const isAndroid = /Android/i.test(ua);
 
-self.addEventListener("fetch", event => {
-  event.respondWith(
-    caches.match(event.request).then(res => res || fetch(event.request))
-  );
-});
+  if (isIOS) {
+    // iOS: needs &body
+    window.location.href = `sms:${number}&body=${body}`;
+    return;
+  }
+
+  if (isAndroid) {
+    // Android: smsto: is more reliable for pre-filling body across messaging apps
+    window.location.href = `smsto:${number}?body=${body}`;
+    return;
+  }
+
+  // Fallback for anything else
+  window.location.href = `sms:${number}?body=${body}`;
+}
