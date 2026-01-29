@@ -1,131 +1,140 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Morning Affirmations</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>GBB Commands</title>
+
+  <!-- PWA -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#1f2937">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="GBB Commands">
+
+  <style>
+    :root {
+      --bg: #f4f4f5;
+      --card: #ffffff;
+      --btn: #1f2937;
+      --btn2: #374151;
+      --shadow: 0 10px 30px rgba(0,0,0,.08);
+      --radius: 16px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      height: 100vh;
+      display: grid;
+      place-items: center;
+      background: var(--bg);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    }
+
+    .app {
+      width: min(420px, 92vw);
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+
+    .title {
+      font-size: 14px;
+      opacity: .7;
+      margin: 0 0 12px 2px;
+    }
+
+    .stack {
+      display: grid;
+      gap: 12px;
+    }
+
+    .btn {
+      border: 0;
+      border-radius: 14px;
+      padding: 18px;
+      font-size: 22px;
+      font-weight: 700;
+      background: var(--btn);
+      color: #fff;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .btn.secondary {
+      background: var(--btn2);
+    }
+
+    .btn:active {
+      transform: scale(.98);
+    }
+
+    .row2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .arrow {
+      font-size: 28px;
+    }
+
+    .footer {
+      margin-top: 10px;
+      font-size: 12px;
+      opacity: .6;
+    }
+  </style>
 </head>
-<body class="dark">
-  <main>
-    <header>
-      <h1>Good Morning</h1>
-      <p>Start your day grounded, focused, and clear.</p>
-      <button id="theme-toggle">Light Mode</button>
-    </header>
-    <section id="buttons"></section>
+
+<body>
+  <main class="app">
+    <p class="title">GBB Commands</p>
+
+    <section class="stack">
+      <button class="btn" onclick="sendCmd('OPEN')">OPEN</button>
+      <button class="btn" onclick="sendCmd('CLOSE')">CLOSE</button>
+      <button class="btn" onclick="sendCmd('WALK')">WALK</button>
+
+      <!-- split front 2 -->
+      <div class="row2">
+        <button class="btn secondary arrow" onclick="sendCmd('LEFT')">←</button>
+        <button class="btn secondary arrow" onclick="sendCmd('RIGHT')">→</button>
+      </div>
+
+      <button class="btn secondary" onclick="sendCmd('?')">?</button>
+    </section>
+
+    <div class="footer">
+      Sends SMS to 2532011314
+    </div>
   </main>
 
   <script>
-    const groups = {
-      "Discipline & Mindset": [
-        "I show up, even when it's hard. Discipline is my baseline.",
-        "My mornings set the tone for everything—I own them.",
-        "I don’t waste energy on what I can’t control—I channel it into what I can build."
-      ],
-      "Career & Mastery": [
-        "I am becoming a master of high-level design, automation, and deep protocol knowledge.",
-        "I lead through competence, not titles. My work speaks before I do.",
-        "I'm not just doing the job—I’m shaping the network."
-      ],
-      "Wealth & Strength": [
-        "I move with long-term vision. My money works for me.",
-        "Every workout I finish is a vote for the man I’m becoming.",
-        "I don’t need comfort—I need growth."
-      ],
-      "Love, Legacy & Spirit": [
-        "I choose love with clarity, not fear. I don’t run from depth.",
-        "Vulnerability is not weakness. It’s power with truth.",
-        "I come from history and strength. I carry that with pride."
-      ],
-      "Self-Love & Wholeness": [
-        "Nothing outside of me defines my worth. I choose to be enough as I am.",
-        "I don’t chase love — I become it, I embody it, I protect it in myself first.",
-        "I don’t self-abandon to be accepted. I’d rather be alone with truth than surrounded by noise.",
-        "I don’t need to be fixed — I just need to be seen, understood, and respected.",
-        "My body, my scars, my history — all of it makes me real. I carry it with pride."
-      ],
-      "Self-Esteem & Respect": [
-        "I move with integrity even when no one’s watching — that’s where real confidence comes from.",
-        "I don’t lower my standards to be liked. I raise my self-respect to be clear.",
-        "My self-esteem doesn’t come from applause — it comes from the life I build in silence.",
-        "I can stand alone without folding. I don’t need validation to be solid.",
-        "Respect starts with how I treat myself when no one else is around."
-      ],
-      "Positivity & Mindset": [
-        "I choose clarity over chaos. I keep my mind clean like I keep my house clean.",
-        "My optimism isn’t naive — it’s earned through surviving and still showing up.",
-        "I don’t feed fear. I focus on what I *can* shape, build, or move.",
-        "I expect challenges — and I meet them with presence, not panic.",
-        "Every day is a new chance to move better, think sharper, and show up real."
-      ],
-      "Stoic Focus (Marcus Aurelius)": [
-        "Today I control only two things: my actions and my thoughts — the rest is noise.",
-        "I don’t argue with reality — I align with it and move with reason.",
-        "I face discomfort without flinching. What stands in the way becomes the path.",
-        "My mind is my fortress. No one can disturb its peace unless I allow it.",
-        "I waste no energy wishing for ease. I strengthen myself for truth.",
-        "I live by the principle, not the praise. I don’t need applause to be right.",
-        "Let others chase pleasure or status — I chase inner clarity and self-discipline.",
-        "Nothing that happens to me is new — but how I respond makes all the difference.",
-        "I do not avoid struggle. I prepare for it. I sharpen myself against it.",
-        "I am not disturbed by events — only my judgments about them."
-      ]
-    };
+  // Register service worker (safe to keep)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+  }
 
-    // ✅ Corrected: play each line one by one (waits for audio to finish)
-    async function speakList(lines) {
-      for (const line of lines) {
-        try {
-          const response = await fetch('/api/speak', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ text: line })
-          });
+  function sendCmd(cmd) {
+    const number = '2532011314';
+    const body = encodeURIComponent(cmd);
 
-          const blob = await response.blob();
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
+    // Detect iOS devices
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-          await new Promise((resolve) => {
-            audio.onended = resolve;
-            audio.onerror = resolve; // fallback on error
-            audio.play();
-          });
-
-        } catch (err) {
-          console.error('Voice error:', err);
-        }
-      }
+    if (isIOS) {
+      // iOS requires &body instead of ?body
+      window.location.href = `sms:${number}&body=${body}`;
+    } else {
+      // Android / others
+      window.location.href = `sms:${number}?body=${body}`;
     }
-
-    function buildButtons() {
-      const container = document.getElementById("buttons");
-      Object.entries(groups).forEach(([label, lines]) => {
-        const btn = document.createElement("button");
-        btn.textContent = `🔊 ${label}`;
-        btn.onclick = () => speakList(lines);
-        container.appendChild(btn);
-      });
-
-      const randomBtn = document.createElement("button");
-      randomBtn.textContent = "🎲 Surprise Me";
-      randomBtn.onclick = () => {
-        const keys = Object.keys(groups);
-        const pick = keys[Math.floor(Math.random() * keys.length)];
-        speakList(groups[pick]);
-      };
-      container.appendChild(randomBtn);
-    }
-
-    document.getElementById("theme-toggle").onclick = () => {
-      const body = document.body;
-      body.classList.toggle("dark");
-      document.getElementById("theme-toggle").textContent =
-        body.classList.contains("dark") ? "Light Mode" : "Dark Mode";
-    };
-
-    window.onload = buildButtons;
+  }
   </script>
 </body>
 </html>
